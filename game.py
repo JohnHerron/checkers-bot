@@ -6,7 +6,7 @@ screen = pg.display.set_mode((1280, 720))
 pg.display.set_caption("Checkers")
 clock = pg.time.Clock()
 running = True
-board = Board(pg, screen)
+board = Board(pg, screen, 8)
 
 while running:
     # poll for events
