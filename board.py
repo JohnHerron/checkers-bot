@@ -38,11 +38,8 @@ class Board:
         square_size = self.board.get_height()/self.n_squares
         self.squares = [[('white' if (x+y)%2 == 0 else 'black',pg.Rect(square_size * x, square_size * y, square_size, square_size)) 
                          for x in range(self.n_squares)] for y in range(self.n_squares)]
-        print(self.squares)
         
     def create_pawns(self):
         num_rows = (self.n_squares//2) - 1
-        self.pawns = [[Pawn(self, square[item][1], 'darkgreen') for item in range(self.n_squares) if square[item][0] == 'black'] for square in self.squares[:num_rows]]
-        self.pawns += [[Pawn(self, square[item][1], 'red') for item in range(self.n_squares) if square[item][0] == 'black'] for square in self.squares[-num_rows:]]
-
-        print(self.pawns)
+        self.pawns = [[Pawn(self, square[item][1], 'darkgreen', idx, item ) for item in range(self.n_squares) if square[item][0] == 'black'] for idx, square in enumerate(self.squares[:num_rows])]
+        self.pawns += [[Pawn(self, square[item][1], 'red', ((idx + num_rows) + 2), item) for item in range(self.n_squares) if square[item][0] == 'black'] for idx, square in enumerate(self.squares[-num_rows:])]
