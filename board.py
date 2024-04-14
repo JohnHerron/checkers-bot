@@ -41,5 +41,11 @@ class Board:
         
     def create_pawns(self):
         num_rows = (self.n_squares//2) - 1
-        self.pawns = [[Pawn(self, square[item][1], 'darkgreen', idx, item ) for item in range(self.n_squares) if square[item][0] == 'black'] for idx, square in enumerate(self.squares[:num_rows])]
-        self.pawns += [[Pawn(self, square[item][1], 'red', ((idx + num_rows) + 2), item) for item in range(self.n_squares) if square[item][0] == 'black'] for idx, square in enumerate(self.squares[-num_rows:])]
+        # generate player 1's pawns
+        self.pawns = [[Pawn(self, square[item][1], 'darkgreen', item, idx )
+                        for item in range(self.n_squares) if square[item][0] == 'black']
+                           for idx, square in enumerate(self.squares[:num_rows])]
+        # generate player 2's pawns
+        self.pawns += [[Pawn(self, square[item][1], 'red', item, (idx + num_rows + 2))
+                         for item in range(self.n_squares) if square[item][0] == 'black']
+                           for idx, square in enumerate(self.squares[-num_rows:])]
