@@ -3,7 +3,7 @@ from pawns import Pawn
 
 class Board:
     '''Board class represents an nxn game board used for display'''
-    def __init__(self, pg, window_surface, n_squares) -> None:
+    def __init__(self, window_surface, n_squares) -> None:
         self.window_surface = window_surface
         self.window_dims = window_surface.get_size()
         self.n_squares = n_squares

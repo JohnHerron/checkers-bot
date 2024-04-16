@@ -19,3 +19,6 @@ class Pawn:
         self.square = self.board.squares[location[1]][location[0]][1]
         self.y = location[1]
         self.x = location[0]
+
+    def get_location(self):
+        return (self.x, self.y)
