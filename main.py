@@ -8,11 +8,16 @@ pg.display.set_caption("Checkers")
 clock = pg.time.Clock()
 running = True
 checker_game = Checkers(screen, 8)
-
+    
 while running:
     # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
     for event in pg.event.get():
+        if event.type == pg.MOUSEBUTTONDOWN:
+            for row in checker_game.board.pawns:
+              for pawn in row:
+                if pawn.square.col_rect.collidepoint(event.pos):
+                    checker_game.select_pawn(pawn)
+        # pygame.QUIT event means the user clicked X to close the window
         if event.type == pg.QUIT:
             running = False
 

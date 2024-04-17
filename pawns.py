@@ -8,17 +8,25 @@ class Pawn:
         self.king = False
         self.square = square
         self.color = color
+        self.highlight_color = 'yellow'
+        self.highlighted = False
         self.x = x
         self.y = y
 
     def draw(self):
-        pg.draw.circle(self.board.board, self.color, self.square.center, (self.square.height/2 * .7), 0)
+        pg.draw.circle(self.board.board, self.color, self.square.rect.center, (self.square.rect.height/2 * .7), 0)
+        if self.highlighted:
+            pg.draw.circle(self.board.board, self.highlight_color, self.square.rect.center, (self.square.rect.height/2 * .7), 3)
 
     def move_to(self, location):
         '''--> tuple moves pawn to (x,y) or (w,h) on mxn board'''
-        self.square = self.board.squares[location[1]][location[0]][1]
+        self.square = self.board.squares[location[1]][location[0]]
         self.y = location[1]
         self.x = location[0]
 
     def get_location(self):
         return (self.x, self.y)
+    
+    def toggle_highlight(self):
+        self.highlighted = not self.highlighted
+        print('toggled highlight')

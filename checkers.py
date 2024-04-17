@@ -9,6 +9,7 @@ class Checkers(Game):
     Intances of this class represent nodes in a state space tree.'''
     def __init__(self, screen, n_squares) -> None:
         self.board = Board(screen, n_squares)
+        self.selected_pawn = None
         self.state = [[0] * n_squares for _ in range(n_squares)] # nxn 2d array filled with 0's
         for row in self.board.pawns:
             for pawn in row:
@@ -59,3 +60,15 @@ class Checkers(Game):
                     valid_moves.append(self.calculate_moves(front, right, val, True))
 
         return valid_moves
+    
+    def select_pawn(self, pawn):
+        '''Only allows one pawn to be selected at a time'''
+        # check if pawn is being deselected
+        if self.selected_pawn == pawn:
+            self.selected_pawn.toggle_highlight()
+            self.selected_pawn = None
+        else:
+            if self.selected_pawn: # remove highlight from previously selected pawn
+                self.selected_pawn.toggle_highlight()
+            self.selected_pawn = pawn
+            self.selected_pawn.toggle_highlight()
