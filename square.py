@@ -6,6 +6,9 @@ class Square:
     def __init__(self, board, color, x, y, size) -> None:
         self.board = board
         self.color = color
+        self.pawn = None
+        self.x = x
+        self.y = y
         self.highlighted = False
         self.highlight_color = 'yellow'
         self.highlight_scaler = 0.3
@@ -27,3 +30,9 @@ class Square:
     
     def toggle_highlight(self):
         self.highlighted = not self.highlighted
+
+    def get_pawn(self):
+        return self.pawn
+    
+    def set_pawn(self, pawn):
+        self.pawn = pawn

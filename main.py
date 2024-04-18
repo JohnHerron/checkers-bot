@@ -13,10 +13,10 @@ while running:
     # poll for events
     for event in pg.event.get():
         if event.type == pg.MOUSEBUTTONDOWN:
-            for row in checker_game.board.pawns:
-              for pawn in row:
-                if pawn.square.col_rect.collidepoint(event.pos):
-                    checker_game.select_pawn(pawn)
+            for row in checker_game.board.squares:
+              for square in row:
+                if square.col_rect.collidepoint(event.pos):
+                    checker_game.handle_click(square)
         # pygame.QUIT event means the user clicked X to close the window
         if event.type == pg.QUIT:
             running = False

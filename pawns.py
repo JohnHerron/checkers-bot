@@ -12,17 +12,22 @@ class Pawn:
         self.highlighted = False
         self.x = x
         self.y = y
+        square.set_pawn(self)
 
     def draw(self):
         pg.draw.circle(self.board.board, self.color, self.square.rect.center, (self.square.rect.height/2 * .7), 0)
         if self.highlighted:
             pg.draw.circle(self.board.board, self.highlight_color, self.square.rect.center, (self.square.rect.height/2 * .7), 3)
 
-    def move_to(self, location):
-        '''--> tuple moves pawn to (x,y) or (w,h) on mxn board'''
-        self.square = self.board.squares[location[1]][location[0]]
-        self.y = location[1]
-        self.x = location[0]
+    def move_to(self, square):
+        '''Move pawn to square on board, reassign associated pawns in square objects'''
+        # remove pawn from previous square
+        self.square.set_pawn(None)
+        self.square = square
+        # assign pawn to new square
+        self.square.set_pawn(self)
+        self.y = square.y
+        self.x = square.x
 
     def get_location(self):
         return (self.x, self.y)
