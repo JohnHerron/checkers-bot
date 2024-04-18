@@ -17,7 +17,7 @@ class Board:
 
         # initialize Rect objs for squares on board
         self.generate_squares()
-        self.update_squares()
+        # self.update_squares()
         # initialize pawns on board with their locations
         self.create_pawns()
 
@@ -52,9 +52,12 @@ class Board:
                          for item in range(self.n_squares) if square[item].color == 'black']
                            for idx, square in enumerate(self.squares[-num_rows:])]
         
-    def update_squares(self):
-        # update square locations
-        for row in self.squares:
-            for square in row:
-                print(square)
-        # [[print(f'{x}, {y}') for x in range(self.n_squares)] for y in range (self.n_squares)]
+    # def update_squares(self):
+    #     # update square locations
+    #     for row in self.squares:
+    #         for square in row:
+    #             print(square)
+    #     # [[print(f'{x}, {y}') for x in range(self.n_squares)] for y in range (self.n_squares)]
+    
+    def get_square(self, x, y):
+        return self.squares[y][x]

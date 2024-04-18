@@ -29,4 +29,3 @@ class Pawn:
     
     def toggle_highlight(self):
         self.highlighted = not self.highlighted
-        print('toggled highlight')

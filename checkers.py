@@ -23,8 +23,9 @@ class Checkers(Game):
                     
 
     def actions(self, node):
-        '''Return list of valid moves from node'''
-        return self.moves
+        '''Return list of valid moves from node
+        Node is a (y,x) pair representing space on the game board.'''
+        return self.moves[f'{node}']
 
     def result(self, node, move):
         '''Return the resulting node after making a move from current node'''
@@ -62,13 +63,18 @@ class Checkers(Game):
         return valid_moves
     
     def select_pawn(self, pawn):
-        '''Only allows one pawn to be selected at a time'''
+        '''Only allows one pawn to be selected at a time.
+        Highlights outline of selected pawn, also highlights tiles pawn can move to.'''
         # check if pawn is being deselected
         if self.selected_pawn == pawn:
-            self.selected_pawn.toggle_highlight()
+            pawn.toggle_highlight()
+            [self.board.get_square(tile[1],tile[0]).toggle_highlight() for tile in self.actions(f'{pawn.y},{pawn.x}')]
             self.selected_pawn = None
         else:
             if self.selected_pawn: # remove highlight from previously selected pawn
                 self.selected_pawn.toggle_highlight()
+                [self.board.get_square(tile[1],tile[0]).toggle_highlight() for tile in self.actions(f'{self.selected_pawn.y},{self.selected_pawn.x}')]
             self.selected_pawn = pawn
             self.selected_pawn.toggle_highlight()
+            [self.board.get_square(tile[1],tile[0]).toggle_highlight() for tile in self.actions(f'{self.selected_pawn.y},{self.selected_pawn.x}')]
+        
