@@ -59,8 +59,8 @@ class Checkers(Game):
                     valid_moves.append((front, right))
                 elif (self.index_within_board(beyond_front) and
                       self.index_within_board(beyond_right) and
-                      self.state[beyond_front][beyond_right] != val): # check if jump is possible
-                    if self.state[front - val][beyond_right] == 0:
+                      self.state[front][right] != val): # check if jump is possible
+                    if self.state[beyond_front][beyond_right] == 0:
                         valid_moves.append((beyond_front, beyond_right))
 
         return valid_moves
