@@ -41,20 +41,32 @@ class Checkers(Game):
         front = row - val
         left = col - val
         right = col + val
+        beyond_front = front - val
+        beyond_left = left - val
+        beyond_right = right + val
         # must check if diagonals are within bounds of board
-        if front >= 0 and front < self.board.n_squares:
-            if left >= 0 and left < self.board.n_squares:
+        if self.index_within_board(front):
+            if self.index_within_board(left):
                 if self.state[front][left] == 0:
                     valid_moves.append((front, left))
-                # elif self.state[front][left] != val:
-                #     valid_moves.append(self.calculate_moves(front, left, val, True))
-            if right >= 0 and right < self.board.n_squares:
+                elif (self.index_within_board(beyond_front) and
+                      self.index_within_board(beyond_left) and
+                      self.state[front][left] != val): # check if jump is possible
+                    if self.state[beyond_front][beyond_left] == 0:
+                        valid_moves.append((beyond_front, beyond_left))
+            if self.index_within_board(right):
                 if self.state[front][right] == 0:
                     valid_moves.append((front, right))
-                # elif self.state[front][right] != val:
-                #     valid_moves.append(self.calculate_moves(front, right, val, True))
+                elif (self.index_within_board(beyond_front) and
+                      self.index_within_board(beyond_right) and
+                      self.state[beyond_front][beyond_right] != val): # check if jump is possible
+                    if self.state[front - val][beyond_right] == 0:
+                        valid_moves.append((beyond_front, beyond_right))
 
         return valid_moves
+    
+    def index_within_board(self, x) -> bool:
+        return x >= 0 and x < self.board.n_squares
 
     def calculate_all_moves(self):
         '''Recalculates all possible moves on board for each square on the board'''
@@ -73,7 +85,8 @@ class Checkers(Game):
             self.toggle_highlight_squares()
             self.selected_pawn = None
         else: # new pawn selected
-            if self.selected_pawn: # remove previous highlights
+            if self.selected_pawn: 
+                # remove previous highlights
                 self.selected_pawn.toggle_highlight()
                 self.toggle_highlight_squares()
             # highlight newly selected pawn and squares
