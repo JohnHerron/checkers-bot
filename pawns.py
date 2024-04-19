@@ -34,3 +34,11 @@ class Pawn:
     
     def toggle_highlight(self):
         self.highlighted = not self.highlighted
+
+    def kill_pawn(self):
+        self.square.set_pawn(None)
+        for row in self.board.pawns:
+            try:
+                row.remove(self)
+            except:
+                pass

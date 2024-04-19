@@ -100,6 +100,20 @@ class Checkers(Game):
         # update state to remove pawn
         self.state[pawn.y][pawn.x] = 0
 
+        # if pawn jumped, remove pawn that got jumped
+        if abs(pawn.x - square.x) > 1 and abs(pawn.y - square.y) > 1:
+            if square.x - pawn.x > 0: # moved right
+                horizontal_movement = 1
+            elif square.x - pawn.x < 0: # moved left
+                horizontal_movement = -1
+            if square.y - pawn.y < 0: # moved up
+                vertical_movement = -1
+            elif square.y - pawn.y > 0: # moved down
+                vertical_movement = 1
+
+            self.board.get_square(pawn.x + horizontal_movement, pawn.y + vertical_movement).get_pawn().kill_pawn()
+            self.state[pawn.y + vertical_movement][pawn.x + horizontal_movement] = 0
+
         # move pawn
         pawn.move_to(square)
 
