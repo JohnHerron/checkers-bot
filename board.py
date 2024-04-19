@@ -51,7 +51,6 @@ class Board:
         self.pawns += [[Pawn(self, square[item], 'red', item, (idx + num_rows + 2))
                          for item in range(self.n_squares) if square[item].color == 'black']
                            for idx, square in enumerate(self.squares[-num_rows:])]
-        print(self.pawns)
     
     def get_square(self, x, y):
         return self.squares[y][x]
