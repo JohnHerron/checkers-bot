@@ -8,6 +8,10 @@ class Pawn:
         self.king = False
         self.square = square
         self.color = color
+        if self.color == 'red':
+            self.king_color = 'darkred'
+        else: 
+            self.king_color = 'green3'
         self.highlight_color = 'yellow'
         self.highlighted = False
         self.x = x
@@ -16,6 +20,8 @@ class Pawn:
 
     def draw(self):
         pg.draw.circle(self.board.board, self.color, self.square.rect.center, (self.square.rect.height/2 * .7), 0)
+        if self.king:
+            pg.draw.circle(self.board.board, self.king_color, self.square.rect.center, (self.square.rect.height/2 * .7), 7)
         if self.highlighted:
             pg.draw.circle(self.board.board, self.highlight_color, self.square.rect.center, (self.square.rect.height/2 * .7), 3)
 
@@ -34,6 +40,9 @@ class Pawn:
     
     def toggle_highlight(self):
         self.highlighted = not self.highlighted
+
+    def promote(self):
+        self.king = True
 
     def kill_pawn(self):
         self.square.set_pawn(None)

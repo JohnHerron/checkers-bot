@@ -31,7 +31,7 @@ class Checkers(Game):
         '''Returns true if given node has no children (valid moves)'''
         return not self.moves
     
-    def calculate_moves(self, row, col, val, jumped = False):
+    def calculate_moves(self, row, col, val):
         '''Returns list of possible locations a piece on a give tile can move to.
         If there is no pawn on tile, returns empty list.
         Move format: [(y,x),(y,x)...]'''
@@ -119,6 +119,10 @@ class Checkers(Game):
 
         # update state to place pawn
         self.state[pawn.y][pawn.x] = 1 if pawn.color == 'red' else -1
+        # if pawn has made it to opposite side then promote
+        if ((pawn.color == 'red' and pawn.y == 0) or
+            (pawn.color == 'darkgreen' and pawn.y == (self.board.n_squares - 1))):
+            pawn.promote()
         # update moves
         self.calculate_all_moves()
 
