@@ -16,7 +16,9 @@ class Checkers(Game):
             for pawn in row:
                 self.state[pawn.y][pawn.x] = 1 if pawn.color == 'red' else -1
         self.moves = {} # dict of possible moves on board
-        self.calculate_all_moves()                    
+        self.calculate_all_moves()
+        self.winner = None
+        self.turn = 'RED'
 
     def actions(self, node):
         '''Return list of valid moves from node
@@ -168,16 +170,24 @@ class Checkers(Game):
 
     def check_win(self):
         if Pawn._red_count == 0:
-            print('GREEN WINS')
+            self.winner = 'GREEN'
         if Pawn._green_count == 0:
-            print('RED WINS')
+            self.winner = 'RED'
+
+    def switch_turn(self):
+        if self.turn == 'GREEN':
+            self.turn = 'RED'
+        else:
+            self.turn = 'GREEN'
 
     def handle_click(self, square):
+        '''Handles player interactions with board, skips if clicked on the bot player's pawn'''
         pawn = square.get_pawn()
-        if pawn:
+        if pawn and pawn.color == 'red':
             print(f'clicked pawn at {pawn.y}, {pawn.x}')
             self.toggle_select_pawn(pawn)
         elif square.highlighted == True:
             pawn = self.selected_pawn
             self.move_pawn(pawn, square)
+            self.switch_turn()
         

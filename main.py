@@ -1,5 +1,7 @@
 import pygame as pg
 from checkers import Checkers
+from game import Game
+from minimax import Minimax
 
 
 pg.init()
@@ -7,16 +9,17 @@ screen = pg.display.set_mode((1280, 720))
 pg.display.set_caption("Checkers")
 clock = pg.time.Clock()
 running = True
-checker_game = Checkers(screen, 8)
+minimax = Minimax()
+game = Game(Checkers(screen, 8), minimax)
     
 while running:
     # poll for events
     for event in pg.event.get():
         if event.type == pg.MOUSEBUTTONDOWN:
-            for row in checker_game.board.squares:
+            for row in game.game.board.squares:
               for square in row:
                 if square.col_rect.collidepoint(event.pos):
-                    checker_game.handle_click(square)
+                    game.handle_click(square)
         # pygame.QUIT event means the user clicked X to close the window
         if event.type == pg.QUIT:
             running = False
@@ -25,7 +28,7 @@ while running:
     screen.fill((138, 221, 237))
 
     # RENDER GAME HERE
-    checker_game.board.draw()
+    game.game.board.draw()
 
     # flip() the display to put your work on screen
     pg.display.flip()
