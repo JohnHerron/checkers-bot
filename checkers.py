@@ -1,6 +1,7 @@
 from game import Game
 from board import Board
 from pawns import Pawn
+from copy import deepcopy
 
 class Checkers(Game):
     '''Standard Checkers game where pawns jump over each other
@@ -16,14 +17,14 @@ class Checkers(Game):
             for pawn in row:
                 self.state[pawn.y][pawn.x] = 1 if pawn.color == 'red' else -1
         self.moves = {} # dict of possible moves on board
-        self.calculate_all_moves()
+        self.moves = self.calculate_all_moves(self.state)
         self.winner = None
         self.turn = 'RED'
 
-    def actions(self, node):
-        '''Return list of valid moves from node
-        Node is a string formatted: "y,x" (y,x) pair representing space on the game board.'''
-        return self.moves[node]
+    def actions(self, pawn):
+        '''Return list of valid moves for pawn
+        Pawn is a string formatted: "y,x" (y,x) pair representing space on the game board.'''
+        return self.moves[pawn]
 
     def result(self, node, move):
         '''Return the resulting node after making a move from current node'''
@@ -34,11 +35,12 @@ class Checkers(Game):
         '''Returns true if given node has no children (valid moves)'''
         return not self.moves
     
-    def calculate_moves(self, row, col, pawn_val):
+    def calculate_moves(self, state, row, col, pawn_val):
         '''Returns list of possible locations a piece on a give tile can move to.
         If there is no pawn on tile, returns empty list.
         Move format: [(y,x),(y,x)...]'''
         valid_moves = []
+        state = state
         if not pawn_val:
             return []
         king = False
@@ -58,42 +60,42 @@ class Checkers(Game):
         # forwards movement
         if self.index_within_board(front):
             if self.index_within_board(left):
-                if self.state[front][left] == 0:
+                if state[front][left] == 0:
                     valid_moves.append((front, left))
                 elif (self.index_within_board(beyond_front) and
                       self.index_within_board(beyond_left) and
-                      self.state[front][left] != val and 
-                      self.state[front][left] != pawn_val): # check if jump is possible
-                    if self.state[beyond_front][beyond_left] == 0:
+                      state[front][left] != val and 
+                      state[front][left] != pawn_val): # check if jump is possible
+                    if state[beyond_front][beyond_left] == 0:
                         valid_moves.append((beyond_front, beyond_left))
             if self.index_within_board(right):
-                if self.state[front][right] == 0:
+                if state[front][right] == 0:
                     valid_moves.append((front, right))
                 elif (self.index_within_board(beyond_front) and
                       self.index_within_board(beyond_right) and
-                      self.state[front][right] != val and 
-                      self.state[front][right] != pawn_val): # check if jump is possible
-                    if self.state[beyond_front][beyond_right] == 0:
+                      state[front][right] != val and 
+                      state[front][right] != pawn_val): # check if jump is possible
+                    if state[beyond_front][beyond_right] == 0:
                         valid_moves.append((beyond_front, beyond_right))
         # backwards movement
         if self.index_within_board(back) and king:
             if self.index_within_board(left):
-                if self.state[back][left] == 0:
+                if state[back][left] == 0:
                     valid_moves.append((back, left))
                 elif (self.index_within_board(beyond_back) and
                       self.index_within_board(beyond_left) and
-                      self.state[back][left] != val and 
-                      self.state[back][left] != pawn_val): # check if jump is possible
-                    if self.state[beyond_back][beyond_left] == 0:
+                      state[back][left] != val and 
+                      state[back][left] != pawn_val): # check if jump is possible
+                    if state[beyond_back][beyond_left] == 0:
                         valid_moves.append((beyond_back, beyond_left))
             if self.index_within_board(right):
-                if self.state[back][right] == 0:
+                if state[back][right] == 0:
                     valid_moves.append((back, right))
                 elif (self.index_within_board(beyond_back) and
                       self.index_within_board(beyond_right) and
-                      self.state[back][right] != val and 
-                      self.state[back][right] != pawn_val): # check if jump is possible
-                    if self.state[beyond_back][beyond_right] == 0:
+                      state[back][right] != val and 
+                      state[back][right] != pawn_val): # check if jump is possible
+                    if state[beyond_back][beyond_right] == 0:
                         valid_moves.append((beyond_back, beyond_right))
 
         return valid_moves
@@ -101,13 +103,15 @@ class Checkers(Game):
     def index_within_board(self, x) -> bool:
         return x >= 0 and x < self.board.n_squares
 
-    def calculate_all_moves(self):
+    def calculate_all_moves(self, state):
         '''Recalculates all possible moves on board for each square on the board'''
-        self.moves.clear()
+        moves = deepcopy(self.moves)
+        moves.clear()
         for row_num, row in enumerate(self.state):
             for col, tile_val in enumerate(row):
                 if tile_val:
-                    self.moves.update({f'{row_num},{col}': self.calculate_moves(row_num, col, tile_val)})
+                    moves.update({f'{row_num},{col}': self.calculate_moves(state, row_num, col, tile_val)})
+        return moves
     
     def toggle_select_pawn(self, pawn):
         '''Only allows one pawn to be selected at a time.
@@ -127,11 +131,38 @@ class Checkers(Game):
             self.selected_pawn.toggle_highlight()
             self.toggle_highlight_squares()
             
-    def move_pawn(self, pawn, square):
-        # remove highlighting from before move is made
-        self.toggle_select_pawn(pawn)
+    def simulate_move(self, pawn, square, state):
+        '''pawn and square are strings in 'y,x' format'''
+        state_matrix = deepcopy(state)
+        pawn_y = int(pawn[:1])
+        pawn_x = int(pawn[2:])
+        val = state_matrix[pawn_y][pawn_x]
+        state_matrix[pawn_y][pawn_x] = 0
+        state_matrix[square[0]][square[1]] = val
+        # if pawn jumped, remove pawn that got jumped
+        if abs(pawn_x - square[1]) > 1 and abs(pawn_y - square[0]) > 1:
+            if square[1] - pawn_x > 0: # moved right
+                horizontal_movement = 1
+            elif square[1] - pawn_x < 0: # moved left
+                horizontal_movement = -1
+            if square[0] - pawn_y < 0: # moved up
+                vertical_movement = -1
+            elif square[0] - pawn_y > 0: # moved down
+                vertical_movement = 1
+            state_matrix[pawn_y + vertical_movement][pawn_x + horizontal_movement] = 0
+
+        return state_matrix
+
+    def move_pawn(self, pawn, square, player = True):
+        '''Move a pawn on the board, always assumes the move is valid.
+        This method also updates the state of the checkers game when a move is made.'''
+        # remove highlighting from before move is made if player
+        if player:
+            self.toggle_select_pawn(pawn)
         # update state to remove pawn
         self.state[pawn.y][pawn.x] = 0
+        print(f"Moved pawn at: {pawn.y},{pawn.x}")
+        print(f"to square: {square.y},{square.x}")
 
         # if pawn jumped, remove pawn that got jumped
         if abs(pawn.x - square.x) > 1 and abs(pawn.y - square.y) > 1:
@@ -160,7 +191,7 @@ class Checkers(Game):
         else:
             self.state[pawn.y][pawn.x] = 1 if pawn.color == 'red' else -1
         # update moves
-        self.calculate_all_moves()
+        self.moves = self.calculate_all_moves(self.state)
         self.check_win()
 
     def toggle_highlight_squares(self):
@@ -169,9 +200,9 @@ class Checkers(Game):
             self.board.get_square(square_coords[1], square_coords[0]).toggle_highlight()
 
     def check_win(self):
-        if Pawn._red_count == 0:
+        if self.board.red_count == 0:
             self.winner = 'GREEN'
-        if Pawn._green_count == 0:
+        if self.board.green_count == 0:
             self.winner = 'RED'
 
     def switch_turn(self):
@@ -182,6 +213,7 @@ class Checkers(Game):
 
     def handle_click(self, square):
         '''Handles player interactions with board, skips if clicked on the bot player's pawn'''
+        if self.winner: return
         pawn = square.get_pawn()
         if pawn and pawn.color == 'red':
             print(f'clicked pawn at {pawn.y}, {pawn.x}')
@@ -189,5 +221,9 @@ class Checkers(Game):
         elif square.highlighted == True:
             pawn = self.selected_pawn
             self.move_pawn(pawn, square)
+            if self.winner:
+                print(f"{self.winner} WINS!!!")
+                self.game_over = True
+                return
             self.switch_turn()
         

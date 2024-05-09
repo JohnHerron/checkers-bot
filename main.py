@@ -1,7 +1,7 @@
 import pygame as pg
 from checkers import Checkers
 from game import Game
-from minimax import Minimax
+from minimax import minimax
 
 
 pg.init()
@@ -9,10 +9,12 @@ screen = pg.display.set_mode((1280, 720))
 pg.display.set_caption("Checkers")
 clock = pg.time.Clock()
 running = True
-minimax = Minimax()
 game = Game(Checkers(screen, 8), minimax)
     
 while running:
+    if game.game.turn == 'GREEN':
+       game.move_bot()
+
     # poll for events
     for event in pg.event.get():
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -23,7 +25,6 @@ while running:
         # pygame.QUIT event means the user clicked X to close the window
         if event.type == pg.QUIT:
             running = False
-
     # fill the screen with a color to wipe away anything from last frame
     screen.fill((138, 221, 237))
 

@@ -3,18 +3,14 @@ import pygame as pg
 class Pawn:
     '''Pawns exist on an mxn board where their location is denoted by
     an (y,x) or (h,w) pair where (0,0) is the top left of the board'''
-    _red_count = 0
-    _green_count = 0
     def __init__(self, board, square, color, x, y) -> None:
         self.board = board
         self.king = False
         self.square = square
         self.color = color
         if self.color == 'red':
-            Pawn._red_count += 1
             self.king_color = 'darkred'
         else: 
-            Pawn._green_count += 1
             self.king_color = 'green3'
         self.highlight_color = 'yellow'
         self.highlighted = False
@@ -47,13 +43,21 @@ class Pawn:
 
     def promote(self):
         self.king = True
+        if self.color == 'red':
+            self.board.red_kings += 1
+        else:
+            self.board.green_kings += 1
 
     def kill_pawn(self):
         self.square.set_pawn(None)
         if self.color == 'red':
-            Pawn._red_count -= 1
+            self.board.red_count -= 1
+            if self.king:
+                self.board.red_kings -= 1
         else:
-            Pawn._green_count -= 1
+            self.board.green_count -= 1
+            if self.king:
+                self.board.green_kings -= 1
         for row in self.board.pawns:
             try:
                 row.remove(self)

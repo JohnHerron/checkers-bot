@@ -9,6 +9,8 @@ class Board:
         self.window_dims = window_surface.get_size()
         self.n_squares = n_squares
         self.pawns = []
+        self.red_kings = 0
+        self.green_kings = 0
 
         self.scaler = .9
         # scale square board to 90% window height
@@ -19,6 +21,10 @@ class Board:
         self.generate_squares()
         # initialize pawns on board with their locations
         self.create_pawns()
+
+        total_pawns = sum(len(row) for row in self.pawns)
+        self.red_count = total_pawns // 2
+        self.green_count = total_pawns // 2
 
     def draw(self):
         self.board.fill("pink")
