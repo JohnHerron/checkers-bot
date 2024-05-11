@@ -1,8 +1,9 @@
 # checkers-bot
 Checkers game with AI opponent and move hints.
 
--TO RUN: run main.py file with pygame installed
+-TO RUN: run `main.py` file with pygame installed
 
+https://github.com/JohnHerron/checkers-bot/assets/50757583/d5611599-7991-4c67-8682-795ad875a173
 
 Components of the Code:
 
